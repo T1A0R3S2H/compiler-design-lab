@@ -1,61 +1,79 @@
-// op_example.c
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
-int main() {
-    int a = 5;
-    int b = 10;
-    int c = a + b;
-    int d = a - b;
-    int e = a * b;
-    int f = a / b;
-    int g = a % b;
-
-    if (a > b) {
-        printf("a is greater than b\n");
-    } else if (a < b) {
-        printf("a is less than b\n");
-    } else {
-        printf("a is equal to b\n");
+int is_single_operator(char ch) {
+    // Single-character operators
+    char operators[] = "+-*/=<>!&|%^";
+    for (int i = 0; i < strlen(operators); i++) {
+        if (ch == operators[i]) {
+            return 1;
+        }
     }
-
-    int h = (a == b) ? 1 : 0;
-    int i = (a != b) ? 1 : 0;
-
-    int j = a & b;
-    int k = a | b;
-    int l = a ^ b;
-    int m = ~a;
-
-    int n = a && b;
-    int o = a || b;
-
-    int p = a++;
-    int q = ++a;
-    int r = a--;
-    int s = --a;
-
-    int array[5] = {1, 2, 3, 4, 5};
-    int t = array[2];
-
-    printf("c = %d\n", c);
-    printf("d = %d\n", d);
-    printf("e = %d\n", e);
-    printf("f = %d\n", f);
-    printf("g = %d\n", g);
-    printf("h = %d\n", h);
-    printf("i = %d\n", i);
-    printf("j = %d\n", j);
-    printf("k = %d\n", k);
-    printf("l = %d\n", l);
-    printf("m = %d\n", m);
-    printf("n = %d\n", n);
-    printf("o = %d\n", o);
-    printf("p = %d\n", p);
-    printf("q = %d\n", q);
-    printf("r = %d\n", r);
-    printf("s = %d\n", s);
-    printf("t = %d\n", t);
-
     return 0;
 }
 
+int main() {
+    char filename[100], ch, prev = '\0';
+    FILE *file;
+    int count = 0;
+
+    // Prompt user for the file name
+    printf("Enter the file name: ");
+    scanf("%s", filename);
+
+    // Open the file
+    file = fopen(filename, "r");
+    if (file == NULL) {
+        printf("Error: Could not open file %s\n", filename);
+        return 1;
+    }
+
+    // Read file character by character
+    while ((ch = fgetc(file)) != EOF) {
+        // Skip multi-line comments
+        if (prev == '/' && ch == '*') {
+            while ((ch = fgetc(file)) != EOF) {
+                if (prev == '*' && ch == '/') break;
+                prev = ch;
+            }
+            prev = '\0';
+            continue;
+        }
+
+        // Skip single-line comments
+        if (prev == '/' && ch == '/') {
+            while ((ch = fgetc(file)) != EOF && ch != '\n');
+            prev = '\0';
+            continue;
+        }
+
+        // Check for compound operators
+        if ((prev == '+' && ch == '+') || (prev == '-' && ch == '-') || 
+            (prev == '=' && ch == '=') || (prev == '!' && ch == '=') ||
+            (prev == '<' && ch == '=') || (prev == '>' && ch == '=') ||
+            (prev == '&' && ch == '&') || (prev == '|' && ch == '|')) {
+            count++;
+            printf("Compound operator found: %c%c\n", prev, ch); // Debug print
+            prev = '\0'; // Clear prev to avoid double-counting
+        } else if (is_single_operator(ch)) {
+            if (prev != '\0' && is_single_operator(prev)) {
+                // Avoid counting single operator twice if part of a compound
+                prev = ch;
+                continue;
+            }
+            count++;
+            printf("Single operator found: %c\n", ch); // Debug print
+            prev = ch; // Save current character for compound check
+        } else {
+            prev = '\0'; // Reset prev if no operator is detected
+        }
+    }
+
+    fclose(file);
+
+    // Display the result
+    printf("Total number of operators in the file: %d\n", count);
+
+    return 0;
+}
