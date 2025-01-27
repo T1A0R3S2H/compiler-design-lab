@@ -36,3 +36,12 @@ int main(int argc, char *argv[]) {
     fclose(input_file);  // Close the file after processing
     return 0;
 }
+
+
+
+// (base) iiitkota@iiitkota-HP-Elite-Tower-600-G9-Desktop-PC:~/compilerlab/ques7$ flex ques10.l
+// (base) iiitkota@iiitkota-HP-Elite-Tower-600-G9-Desktop-PC:~/compilerlab/ques7$ gcc lex.yy.c -o count_chars -lfl
+// (base) iiitkota@iiitkota-HP-Elite-Tower-600-G9-Desktop-PC:~/compilerlab/ques7$ ./count_chars example.c
+// Vowels: 16
+// Consonants: 31
+
