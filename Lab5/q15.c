@@ -38,7 +38,7 @@ int main() {
                 }
                 beta[j] = '\0';  
 
-                printf("Grammar without left recursion:\n");
+                printf("Grammar with left recursion:\n");
                 printf("%c->%s%c'\n", non_terminal, beta, non_terminal);
                 printf("%c'->%s%c'|E\n", non_terminal, alpha, non_terminal);
             } else {
